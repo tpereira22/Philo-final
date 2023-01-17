@@ -6,7 +6,7 @@
 /*   By: timartin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 18:22:39 by timartin          #+#    #+#             */
-/*   Updated: 2023/01/16 18:35:33 by timartin         ###   ########.fr       */
+/*   Updated: 2023/01/17 19:29:46 by timartin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,14 @@ typedef struct s_p_data
 	pthread_mutex_t	*m_fork;
 	pthread_mutex_t	m_dead_philo;
 	pthread_mutex_t	m_check_eat;
-	pthread_mutex_t	m_counter;
+	pthread_mutex_t	m_print;
 }	t_p_data;
 
 typedef struct s_philo
 {
 	pthread_t	philo_thread;
 	long long	last_eat;
+	int			start_sleep;
 	int			id;
 	int			eat_counter;
 	int			eat_lock;
@@ -90,6 +91,7 @@ void		free_and_destroy(t_info *info);
 void		check_fork(t_philo *philo, pthread_mutex_t *lock, int pos);
 void		eat(t_philo *philo);
 void		zzz_sleep(t_philo *philo);
+void		print_action(t_philo *philo, char *color, char *status);
 
 // philo_utils.c
 int			check_all(t_philo *philo);

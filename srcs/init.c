@@ -47,6 +47,7 @@ void	init_philo(t_info *info)
 	{
 		info->philo[i].id = i + 1;
 		info->philo[i].time_die = data()->time_die;
+		info->philo[i].start_sleep = 0;
 		info->philo[i].eat_counter = 0;
 		info->philo[i].eat_lock = 0;
 		info->philo[i].last_eat = 0;
@@ -75,5 +76,5 @@ void	init_mutex(t_info *info)
 		pthread_mutex_init(&data()->m_fork[i], NULL);
 	pthread_mutex_init(&data()->m_dead_philo, NULL);
 	pthread_mutex_init(&data()->m_check_eat, NULL);
-	pthread_mutex_init(&data()->m_counter, NULL);
+	pthread_mutex_init(&data()->m_print, NULL);
 }

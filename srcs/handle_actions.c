@@ -6,7 +6,7 @@
 /*   By: timartin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:46:20 by timartin          #+#    #+#             */
-/*   Updated: 2023/01/16 17:49:07 by timartin         ###   ########.fr       */
+/*   Updated: 2023/01/17 19:29:21 by timartin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,13 @@ void	check_fork(t_philo *philo, pthread_mutex_t *lock, int pos)
 		data()->forks[pos] = 1;
 		philo->fork += 1;
 		if (check_all(philo))
-			printf("%s%lld ms -> Philosopher %d %s\n",
-				CYAN, get_time(data()->start_time), philo->id, FORK);
+			print_action(philo, CYAN, FORK);
 	}
 	pthread_mutex_unlock(lock);
 }
 
 void	eat(t_philo *philo)
 {
-	usleep(100);
 	while (philo->fork != 2 && check_all(philo))
 	{
 		check_fork(philo, &data()->m_fork[philo->left], philo->left);
@@ -37,13 +35,14 @@ void	eat(t_philo *philo)
 	if (check_all(philo))
 	{
 		philo->last_eat = get_time(0);
-		usleep(200);
-		if (check_all(philo))
-			printf("%s%lld ms -> Philosopher %d %s\n",
-				GREEN, get_time(data()->start_time), philo->id, EAT);
+		print_action(philo, GREEN, EAT);
 		philo->eat_counter += 1;
 		check_all(philo);
-		usleep(data()->time_eat * 1000);
+		while ((get_time(0) - philo->last_eat) < data()->time_eat)
+		{
+			check_all(philo);
+			usleep(1);
+		}
 		pthread_mutex_lock(&data()->m_fork[philo->left]);
 		data()->forks[philo->left] = 0;
 		pthread_mutex_unlock(&data()->m_fork[philo->left]);
@@ -57,10 +56,27 @@ void	eat(t_philo *philo)
 
 void	zzz_sleep(t_philo *philo)
 {
-	if (data()->dead_flag == 0 & data()->eat_flag != data()->nr_philo)
+	if (check_all(philo))
 	{
-		printf("%s%lld ms -> Philosopher %d %s\n",
-			BLUE, get_time(data()->start_time), philo->id, SLEEP);
-		usleep(data()->time_sleep * 1000);
+		if (data()->eat_flag < data()->nr_philo)
+		{
+			philo->start_sleep = get_time(data()->start_time);
+			print_action(philo, BLUE, SLEEP);
+			while ((get_time(data()->start_time)
+					- philo->start_sleep) < data()->time_sleep)
+			{
+				check_all(philo);
+				usleep(1);
+			}
+		}
 	}
+}
+
+void	print_action(t_philo *philo, char *color, char *status)
+{
+	pthread_mutex_lock(&data()->m_print);
+	if (check_all(philo))
+		printf("%s%lld ms -> Philosopher %d %s\n",
+			color, get_time(data()->start_time), philo->id, status);
+	pthread_mutex_unlock(&data()->m_print);
 }

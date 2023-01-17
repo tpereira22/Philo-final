@@ -6,7 +6,7 @@
 /*   By: timartin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:49:24 by timartin          #+#    #+#             */
-/*   Updated: 2023/01/16 17:53:37 by timartin         ###   ########.fr       */
+/*   Updated: 2023/01/17 19:31:21 by timartin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@ void	*routine(void *args)
 			if (check_all(philo))
 				zzz_sleep(philo);
 			if (check_all(philo))
-				printf("%s%lld ms -> Philosopher %d %s\n",
-					YELLOW, get_time(data()->start_time), philo->id, THINK);
+			{
+				if (data()->eat_flag < data()->nr_philo)
+					print_action(philo, YELLOW, THINK);
+			}
 		}
 	}
 	return (NULL);
@@ -78,7 +80,7 @@ void	free_and_destroy(t_info *info)
 		pthread_mutex_destroy(&data()->m_fork[i]);
 	pthread_mutex_destroy(&data()->m_dead_philo);
 	pthread_mutex_destroy(&data()->m_check_eat);
-    pthread_mutex_destroy(&data()->m_counter);
+	pthread_mutex_destroy(&data()->m_print);
 	free(data()->m_fork);
 	free(data()->forks);
 	free(info->philo);
